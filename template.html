@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Song Information</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 8px;
+      font-size: 1rem;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #songInfo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #songDetails {
+      text-align: center;
+    }
+
+    #videoPlayer {
+      margin-top: 20px;
+    }
+
+    #progressBar {
+      width: 80%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <label for="songInput">Enter Song Name:</label>
+  <input type="text" id="songInput">
+  <button onclick="searchAndPlay()">Search and Play</button>
+
+  <div id="songInfo">
+    <div id="songDetails">
+      <h2 id="songTitle"></h2>
+      <p id="artistName"></p>
+      <img id="thumbnail" alt="Thumbnail">
+    </div>
+    <div id="videoPlayer"></div>
+    <input type="range" id="progressBar" value="0" max="100" step="1" onchange="seekTo()">
+  </div>
+
+  <button id="playPauseBtn" onclick="playOrPause()">Play/Pause</button>
+
+  <script src="node.js">
+    
+  </script>
+
+  <!-- Include the YouTube iframe API script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+</body>
+</html>
