@@ -22,12 +22,11 @@
       // Generate a unique session ID
       const sessionID = generateSessionID();
 
-      // Create a new URL with the session ID as a query parameter
-      const newURL = new URL(window.location.href);
-      newURL.searchParams.set('sessionID', sessionID);
+      // Modify the URL to include the session ID
+      const newURL = window.location.origin + window.location.pathname + '?sessionID=' + sessionID;
 
       // Open the new URL in the same tab
-      window.location.replace(newURL.href);
+      window.location.replace(newURL);
 
       // You can use the sessionID for further processing or store it as needed
       console.log('Session ID:', sessionID);
