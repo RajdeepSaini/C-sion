@@ -37,12 +37,6 @@
 
           // Open the new document in a new tab
           const newWindow = window.open('', '_self');
-
-          // Update the URL using pushState
-          const newUrl = window.location.origin + '/session/' + sessionID;
-          newWindow.history.pushState({ path: newUrl }, '', newUrl);
-
-          // Write the content to the new tab
           newWindow.document.write(newDocument.documentElement.outerHTML);
           newWindow.document.close();
 
