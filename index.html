@@ -12,24 +12,39 @@
 
   <script>
     function generateSessionID() {
-      // Generate a random string as a session ID (replace with your actual logic)
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       const length = 6;
       return Array.from({ length }, () => characters[Math.floor(Math.random() * characters.length)]).join('');
     }
 
     function createSessionPage() {
-      // Generate a unique session ID
       const sessionID = generateSessionID();
 
       // Modify the URL to include the session ID
       const newURL = window.location.origin + window.location.pathname + '?sessionID=' + sessionID;
 
-      // Open the new URL in the same tab
-      window.location.replace(newURL);
+      // Update the URL in the address bar
+      window.history.pushState({ sessionID }, '', newURL);
+
+      // Use the session ID to dynamically load content
+      loadContent(sessionID);
 
       // You can use the sessionID for further processing or store it as needed
       console.log('Session ID:', sessionID);
+    }
+
+    function loadContent(sessionID) {
+      // Use sessionID to determine what content to load
+      // For simplicity, let's just display the sessionID for now
+      document.body.innerHTML = `<h1>Session ID: ${sessionID}</h1>`;
+    }
+
+    // Check if there's a sessionID in the URL when the page loads
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSessionID = urlParams.get('sessionID');
+    if (initialSessionID) {
+      // Load content if a sessionID is present in the URL
+      loadContent(initialSessionID);
     }
   </script>
 
