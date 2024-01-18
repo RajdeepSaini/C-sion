@@ -35,10 +35,13 @@
           // Modify the title of the new document
           newDocument.title = 'Session Page - ' + sessionID;
 
-          // Open the new document in a new tab
-          const newWindow = window.open('', '_self');
-          newWindow.document.write(newDocument.documentElement.outerHTML);
-          newWindow.document.close();
+          // Open the new document in the same tab
+          document.open();
+          document.write(newDocument.documentElement.outerHTML);
+          document.close();
+
+          // Update the URL in the address bar
+          window.location.replace('#' + sessionID);
 
           // You can use the sessionID for further processing or store it as needed
           console.log('Session ID:', sessionID);
