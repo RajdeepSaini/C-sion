@@ -82,6 +82,8 @@
   <button id="playPauseBtn" onclick="playOrPause()">Play/Pause</button>
 
   <script>
+
+  document.addEventListener('DOMContentLoaded', function () {
     let isPlaying = false;
     let player; // reference to the YouTube iframe
 
@@ -120,8 +122,8 @@
         height: '315',
         width: '560',
         playerVars: {
-         'autoplay': 1,
-         },
+          'autoplay': 1,
+        },
         videoId: '', // Replace with the actual video ID when available
         events: {
           'onReady': onPlayerReady,
@@ -131,16 +133,51 @@
     }
 
     function onPlayerReady(event) {
-      document.getElementById('progressBar').max = player.getDuration();
-      setInterval(updateProgressBar, 1000);
+      // When the player is ready, set up the Firebase sync
+      setupFirebaseSync();
     }
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
-        isPlaying = false;
-        document.getElementById('playPauseBtn').innerText = 'Play';
+        // When the video ends, pause and sync with Firebase
+        pauseVideo();
+        syncWithFirebase();
       }
     }
+
+    function setupFirebaseSync() {
+      // Listen for changes in the Firebase 'currentSong' node
+      database.ref('currentSong').on('value', function (snapshot) {
+        const songInfo = snapshot.val();
+
+        // Update the UI with the song information
+        document.getElementById('songTitle').innerText = songInfo.title;
+        document.getElementById('artistName').innerText = songInfo.artist;
+        document.getElementById('thumbnail').src = songInfo.thumbnail;
+
+        // Set the videoId for the YouTube iframe
+        player.loadVideoById(songInfo.videoId, songInfo.currentTime);
+
+        // Play or pause based on the 'isPlaying' status
+        if (songInfo.isPlaying) {
+          playVideo();
+        } else {
+          pauseVideo();
+        }
+      });
+    }
+
+    function syncWithFirebase() {
+      const currentTime = player.getCurrentTime();
+      const isPlaying = player.getPlayerState() === YT.PlayerState.PLAYING;
+
+      // Update Firebase with the current video state
+      database.ref('currentSong').update({
+        currentTime: currentTime,
+        isPlaying: isPlaying
+      });
+    }
+
 
     function updateProgressBar() {
       const progressBar = document.getElementById('progressBar');
@@ -203,7 +240,7 @@
           console.error('Error fetching song information:', error);
         });
     }
-
+});
     // Add this script to your existing script section
 document.addEventListener('DOMContentLoaded', function () {
   // Listen for changes in the Firebase 'currentSong' node
@@ -226,7 +263,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
-
   </script>
 
   <script>
