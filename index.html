@@ -25,40 +25,48 @@
 </head>
 <body>
     <h1>Song Details</h1>
-    <form id="songForm">
-        <label for="title">Song Title:</label>
-        <input type="text" id="title" name="title" required>
-        <br>
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" required>
-        <br>
-        <label for="thumbnail">Thumbnail URL:</label>
-        <input type="text" id="thumbnail" name="thumbnail" required>
-        <br>
-        <button type="button" onclick="getSongDetails()">Get Details</button>
-    </form>
-    <div id="songDetails"></div>
-    <script>
-        function getSongDetails() {
-            const form = document.getElementById('songForm');
-            const formData = new FormData(form);
+    <!-- Update the form section -->
+<form id="songForm">
+    <label for="songName">Song Name:</label>
+    <input type="text" id="songName" name="songName" required>
+    <br>
+    <button type="button" onclick="getSongDetails()">Get Details</button>
+</form>
 
-            fetch('/song-details', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                const songDetailsDiv = document.getElementById('songDetails');
-                songDetailsDiv.innerHTML = `
-                    <h2>Song Details</h2>
-                    <p><strong>Title:</strong> ${data.title}</p>
-                    <p><strong>Author:</strong> ${data.author}</p>
-                    <img src="${data.thumbnail}" alt="Thumbnail">
-                `;
-            });
-        }
-    </script>
+<!-- Update the script section -->
+<script>
+    function getSongDetails() {
+        const form = document.getElementById('songForm');
+        const formData = new FormData(form);
+
+        fetch('/song-details', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Song not found');
+            }
+        })
+        .then(data => {
+            const songDetailsDiv = document.getElementById('songDetails');
+            songDetailsDiv.innerHTML = `
+                <h2>Song Details</h2>
+                <p><strong>Title:</strong> ${data.title}</p>
+                <p><strong>Author:</strong> ${data.author}</p>
+                <img src="${data.thumbnail}" alt="Thumbnail">
+            `;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const songDetailsDiv = document.getElementById('songDetails');
+            songDetailsDiv.innerHTML = '<p style="color: red;">Song not found</p>';
+        });
+    }
+</script>
+
     <script src="node.js"></script>
 </body>
 </html>
