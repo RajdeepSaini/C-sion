@@ -149,9 +149,23 @@
     }
 
     function searchAndPlay() {
-      searchSong();
-      playVideo();
-    }
+  searchSong();
+
+  // Get the currently playing song information
+  const songInfo = {
+    title: document.getElementById('songTitle').innerText,
+    artist: document.getElementById('artistName').innerText,
+    thumbnail: document.getElementById('thumbnail').src,
+    duration: player.getDuration(), // Assuming 'player' is a global variable referencing the YouTube iframe
+    isPlaying: isPlaying
+  };
+
+  // Update Firebase with the current song information
+  database.ref('currentSong').set(songInfo);
+
+  // Play the video
+  playVideo();
+}
 
     function searchSong() {
       const userInput = document.getElementById('songInput').value;
