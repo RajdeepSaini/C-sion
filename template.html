@@ -155,15 +155,6 @@
 
     function searchSong() {
       const userInput = document.getElementById('songInput').value;
-
-      const songInfo = {
-    title: document.getElementById('songTitle').innerText,
-    artist: document.getElementById('artistName').innerText,
-    thumbnail: document.getElementById('thumbnail').src,
-    duration: player.getDuration(), // Assuming 'player' is a global variable referencing the YouTube iframe
-    isPlaying: isPlaying
-  };
-
       const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(userInput)}&entity=song`;
 
       fetch(apiUrl)
