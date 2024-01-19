@@ -16,15 +16,15 @@ app.post('/song-details', async (req, res) => {
     const songName = req.body.songName;
 
     try {
-        const deezerResponse = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(songName)}`);
-        const deezerData = await deezerResponse.json();
+        const lastFmResponse = await fetch(`http://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(songName)}&api_key=YOUR_LASTFM_API_KEY&format=json`);
+        const lastFmData = await lastFmResponse.json();
 
-        if (deezerData.data && deezerData.data.length > 0) {
-            const firstResult = deezerData.data[0];
+        if (lastFmData.results && lastFmData.results.trackmatches.track.length > 0) {
+            const firstResult = lastFmData.results.trackmatches.track[0];
             const songDetails = {
-                title: firstResult.title,
-                author: firstResult.artist.name,
-                thumbnail: firstResult.album.cover_medium,
+                title: firstResult.name,
+                author: firstResult.artist,
+                thumbnail: firstResult.image[2]['#text'], // Use a suitable image size
             };
 
             res.json(songDetails);
