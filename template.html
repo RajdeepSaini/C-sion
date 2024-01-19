@@ -156,6 +156,14 @@
     function searchSong() {
       const userInput = document.getElementById('songInput').value;
 
+      const songInfo = {
+    title: document.getElementById('songTitle').innerText,
+    artist: document.getElementById('artistName').innerText,
+    thumbnail: document.getElementById('thumbnail').src,
+    duration: player.getDuration(), // Assuming 'player' is a global variable referencing the YouTube iframe
+    isPlaying: isPlaying
+  };
+
       const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(userInput)}&entity=song`;
 
       fetch(apiUrl)
@@ -189,10 +197,56 @@
           console.error('Error fetching song information:', error);
         });
     }
+
+    import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyC-9MC9X9UHZhV4CzJBG3g32aZcN75LFlI",
+  authDomain: "c-sion.firebaseapp.com",
+  databaseURL: "https://c-sion-default-rtdb.firebaseio.com",
+  projectId: "c-sion",
+  storageBucket: "c-sion.appspot.com",
+  messagingSenderId: "398897723178",
+  appId: "1:398897723178:web:a0043e5457460be1f59053",
+  measurementId: "G-KWHTJ2JMMT"
+};
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Reference to the Firebase Realtime Database
+  const database = firebase.database();
+
+    // Add this script to your existing script section
+document.addEventListener('DOMContentLoaded', function () {
+  // Listen for changes in the Firebase 'currentSong' node
+  database.ref('currentSong').on('value', function (snapshot) {
+    const songInfo = snapshot.val();
+
+    // Update the UI with the song information
+    document.getElementById('songTitle').innerText = songInfo.title;
+    document.getElementById('artistName').innerText = songInfo.artist;
+    document.getElementById('thumbnail').src = songInfo.thumbnail;
+
+    // Set the videoId for the YouTube iframe
+    player.loadVideoById(songInfo.videoId, songInfo.currentTime);
+
+    // Play or pause based on the 'isPlaying' status
+    if (songInfo.isPlaying) {
+      playVideo();
+    } else {
+      pauseVideo();
+    }
+  });
+});
+
   </script>
 
   <!-- Include the YouTube iframe API script -->
   <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.9/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.9/firebase-database.js"></script>
 
 </body>
 </html>
