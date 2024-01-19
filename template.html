@@ -218,29 +218,6 @@ import { getAnalytics } from "firebase/analytics";
   // Reference to the Firebase Realtime Database
   const database = firebase.database();
 
-    // Add this script to your existing script section
-document.addEventListener('DOMContentLoaded', function () {
-  // Listen for changes in the Firebase 'currentSong' node
-  database.ref('currentSong').on('value', function (snapshot) {
-    const songInfo = snapshot.val();
-
-    // Update the UI with the song information
-    document.getElementById('songTitle').innerText = songInfo.title;
-    document.getElementById('artistName').innerText = songInfo.artist;
-    document.getElementById('thumbnail').src = songInfo.thumbnail;
-
-    // Set the videoId for the YouTube iframe
-    player.loadVideoById(songInfo.videoId, songInfo.currentTime);
-
-    // Play or pause based on the 'isPlaying' status
-    if (songInfo.isPlaying) {
-      playVideo();
-    } else {
-      pauseVideo();
-    }
-  });
-});
-
   </script>
 
   <!-- Include the YouTube iframe API script -->
