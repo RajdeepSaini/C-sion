@@ -1,21 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        input, button {
+            margin: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        img {
+            max-width: 300px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
+    <h1>Song Details</h1>
+    <form id="songForm">
+        <label for="title">Song Title:</label>
+        <input type="text" id="title" name="title" required>
+        <br>
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required>
+        <br>
+        <label for="thumbnail">Thumbnail URL:</label>
+        <input type="text" id="thumbnail" name="thumbnail" required>
+        <br>
+        <button type="button" onclick="getSongDetails()">Get Details</button>
+    </form>
+    <div id="songDetails"></div>
+    <script>
+        function getSongDetails() {
+            const form = document.getElementById('songForm');
+            const formData = new FormData(form);
 
-  <h1>Welcome to the Index Page</h1>
-  <button onclick="createSessionPage()">Create Session Page</button>
-
-  <script>
-    function createSessionPage() {
-      // Redirect to the template.html page
-      window.location.href = 'template.html';
-    }
-  </script>
-
+            fetch('/song-details', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const songDetailsDiv = document.getElementById('songDetails');
+                songDetailsDiv.innerHTML = `
+                    <h2>Song Details</h2>
+                    <p><strong>Title:</strong> ${data.title}</p>
+                    <p><strong>Author:</strong> ${data.author}</p>
+                    <img src="${data.thumbnail}" alt="Thumbnail">
+                `;
+            });
+        }
+    </script>
 </body>
 </html>
