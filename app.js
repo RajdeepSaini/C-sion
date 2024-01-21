@@ -26,13 +26,19 @@ const database = firebase.database();
 function submitData() {
     const inputData = document.getElementById('dataInput').value;
 
-    // Get a new key for the data
-    const newKey = database.ref().child('data').push().key;
+    if (inputData.trim() !== '') {
+        // Get a new key for the data
+        const newKey = database.ref().child('data').push().key;
 
-    // Save the data to the database
-    database.ref('data/' + newKey).set({
-        text: inputData
-    });
+        // Save the data to the database
+        database.ref('data/' + newKey).set({
+            text: inputData
+        });
+
+        alert('Data submitted successfully!');
+    } else {
+        alert('Please enter something before submitting.');
+    }
 }
 
 // Listen for changes in the database and update the display
@@ -40,4 +46,7 @@ database.ref('data').on('child_added', (snapshot) => {
     const data = snapshot.val();
     const displayDiv = document.getElementById('displayData');
     displayDiv.innerHTML += `<p>${data.text}</p>`;
+
+    // Update the heading with the user's input
+    document.getElementById('heading').innerText = data.text;
 });
