@@ -1,3 +1,6 @@
+import { initializeApp } from "firbase/app";
+import { getDatabase, ref, set } from "firebase/database";
+
 // Import the functions you need from the SDKs you need
 const firebaseConfig = {
   apiKey: "AIzaSyC-9MC9X9UHZhV4CzJBG3g32aZcN75LFlI",
@@ -11,7 +14,20 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+function writeUserInput(userId, input) {
+  const db = getDatabase();
+  const reference = ref(db, 'users/' + userId);
+
+  set(reference, {
+    username: name,
+    input: input
+  });
+}
+
+writeUserInput("Hmm", dataInput);
+
 // Reference to the database
 const database = firebase.database();
 
