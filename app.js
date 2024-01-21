@@ -23,15 +23,15 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 // Function to submit data
+const headingElement = document.getElementById('heading');
+
+// Function to submit data
 function submitData() {
     const inputData = document.getElementById('dataInput').value;
 
     if (inputData.trim() !== '') {
-        // Get a new key for the data
-        const newKey = database.ref().child('data').push().key;
-
         // Save the data to the database
-        database.ref('data/' + newKey).set({
+        database.ref('data').set({
             text: inputData
         });
 
@@ -41,12 +41,12 @@ function submitData() {
     }
 }
 
-// Listen for changes in the database and update the display
-database.ref('data').on('child_added', (snapshot) => {
+// Listen for changes in the database and update the heading
+database.ref('data').on('value', (snapshot) => {
     const data = snapshot.val();
-    const displayDiv = document.getElementById('displayData');
-    displayDiv.innerHTML += `<p>${data.text}</p>`;
-
+    
     // Update the heading with the user's input
-    document.getElementById('heading').innerText = data.text;
+    if (data && data.text) {
+        headingElement.innerText = data.text;
+    }
 });
