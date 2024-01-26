@@ -1,7 +1,11 @@
-import { initializeApp } from "firbase/app";
-import { getDatabase, ref, set } from "firebase/database";
-
 // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyC-9MC9X9UHZhV4CzJBG3g32aZcN75LFlI",
   authDomain: "c-sion.firebaseapp.com",
@@ -15,47 +19,41 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+// Get a reference to the Firestore database
+const db = firebase.firestore();
 
-function writeUserInput(userId, input) {
-  const db = getDatabase();
-  const reference = ref(db, 'users/' + userId);
+// Function to submit user input
+function submitMessage() {
+    const userInput = document.getElementById('userInput').value;
 
-  set(reference, {
-    username: name,
-    input: input
-  });
+    // Add user input to the Firestore database
+    db.collection('messages').add({
+        text: userInput,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+    })
+    .catch((error) => {
+        console.error("Error adding document: ", error);
+    });
+
+    // Update the header text immediately
+    updateHeaderText(userInput);
 }
 
-writeUserInput("Hmm", dataInput);
+// Function to update the header text
+function updateHeaderText(text) {
+    document.getElementById('headerText').innerText = text;
+}
 
-// Reference to the database
-const database = firebase.database();
-
-// Function to submit data
-const headingElement = document.getElementById('heading');
-
-// Function to submit data
-function submitData() {
-    const inputData = document.getElementById('dataInput').value;
-
-    if (inputData.trim() !== '') {
-        // Save the data to the database
-        database.ref('data').set({
-            text: inputData
+// Real-time listener to update header text for new messages
+db.collection('messages')
+    .orderBy('timestamp', 'desc')
+    .limit(1)
+    .onSnapshot((snapshot) => {
+        snapshot.forEach((doc) => {
+            updateHeaderText(doc.data().text);
         });
-
-        alert('Data submitted successfully!');
-    } else {
-        alert('Please enter something before submitting.');
-    }
-}
-
-// Listen for changes in the database and update the heading
-database.ref('data').on('value', (snapshot) => {
-    const data = snapshot.val();
-    
-    // Update the heading with the user's input
-    if (data && data.text) {
-        headingElement.innerText = data.text;
-    }
-});
+    });
