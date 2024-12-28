@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony - Join the Music</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="form-container">
+            <div class="auth-header">
+                <h1>Symphony</h1>
+                <p class="tagline">Let the music of your life play on</p>
+            </div>
+
+            <div class="form-wrapper">
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder=" " required>
+                        <label for="loginEmail">Email</label>
+                        <div class="music-notes"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder=" " required>
+                        <label for="loginPassword">Password</label>
+                        <div class="music-notes"></div>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <input type="email" id="registerEmail" placeholder=" " required>
+                        <label for="registerEmail">Email</label>
+                        <div class="music-notes"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="registerPassword" placeholder=" " required>
+                        <label for="registerPassword">Password</label>
+                        <div class="music-notes"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="confirmPassword" placeholder=" " required>
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="music-notes"></div>
+                    </div>
+                    <button type="submit" class="submit-btn">Register</button>
+                </form>
+            </div>
+
+            <div class="form-toggle">
+                <span id="toggleLogin">Login</span> | <span id="toggleRegister">Register</span>
+            </div>
+        </div>
+
+        <canvas id="dotsCanvas"></canvas>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html> 

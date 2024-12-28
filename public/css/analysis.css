@@ -1,0 +1,584 @@
+/* Analysis Panel Styles */
+.analysis-panel {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1001;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    cursor: default;
+    user-select: none;
+    transition: transform 0.1s ease;
+    padding: 0;
+}
+
+.analysis-drag-handle {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    cursor: grab;
+    z-index: 1;
+    padding: 10px 0;
+}
+
+.analysis-drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-indicator {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.analysis-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: default;
+}
+
+.analysis-container {
+    display: flex;
+    height: calc(100% - 60px); /* Slightly adjust for header */
+}
+
+.analysis-sidebar {
+    width: 50px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 5px;
+    position: relative;
+    border-bottom-left-radius: 15px;    
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 15px 0;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    width: 100%;
+}
+
+.tab-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.7em;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.2s ease;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+.tab-item:hover .tab-label,
+.tab-item:hover .tab-btn {
+    color: var(--primary-color);
+}
+
+.tab-item.active {
+    background: white;
+    margin-left: 6px;
+}
+
+.tab-btn {
+    width: 40px;
+    height: 40px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    position: relative;
+    z-index: 1;
+    border: none;
+    background: none;
+    outline: none;
+    pointer-events: none;
+}
+
+.tab-item:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.analysis-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    background: white;
+    position: relative;
+    z-index: 1;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+/* Tab Content Styles */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Overview Tab */
+#overview .analysis-stat {
+    background: rgba(0, 0, 0, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+/* Top Songs Tab */
+.top-song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Leaderboard Tab */
+.leaderboard {
+    padding: 10px 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Insights Tab */
+.session-insights {
+    padding: 10px 0;
+}
+
+.insight-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Genre Chart Container */
+#genres {
+    padding: 15px;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#genreChart {
+    width: 100%;
+    height: 100%;
+    margin-top: 5px;
+}
+
+/* Show panel when visible class is added */
+.analysis-panel.visible {
+    display: block;
+}
+
+.analysis-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.analysis-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.analysis-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #ff4757;
+}
+
+.analysis-stat {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.analysis-stat i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    background: rgba(29, 185, 84, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.analysis-stat div {
+    flex: 1;
+}
+
+.analysis-stat strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--dark-color);
+}
+
+.song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.song-genres {
+    display: flex;
+    gap: 4px;
+}
+
+.genre-tag {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    background: rgba(29, 185, 84, 0.1);
+    color: var(--primary-color);
+    border-radius: 12px;
+}
+
+.song-artist {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.toggle-analysis {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.toggle-analysis:hover {
+    transform: scale(1.1);
+    background: #1ed760;
+}
+
+.toggle-analysis.active {
+    background: #1ed760;
+    transform: rotate(360deg);
+}
+
+.most-played-song {
+    background: rgba(29, 185, 84, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    position: relative;
+}
+
+.crown-icon {
+    color: #ffd700;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.most-played-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.other-songs {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.other-songs h4 {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    width: 100%;
+}
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    display: block;
+}
+
+.section-title {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.most-played-section {
+    margin-bottom: 20px;
+}
+
+.songs-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-right: -5px; /* Compensate for scrollbar width */
+    padding-right: 5px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.play-count-label {
+    font-size: 0.85em;
+    color: var(--primary-color);
+    margin-top: 2px;
+}
+
+.section-title {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Make the chart bigger */
+#genres {
+    padding: 15px;
+    height: 100%;
+}
+
+#genreChart {
+    width: 100%;
+    height: 100%;
+    margin-top: 5px;
+}
+
+.most-played-song {
+    background: rgba(29, 185, 84, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    position: relative;
+}
+
+.song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+/* Dark theme styles */
+.dark-theme {
+    background: rgba(18, 18, 18, 0.95) !important;
+    color: #fff;
+}
+
+.dark-theme .analysis-sidebar {
+    background: rgba(255, 255, 255, 0.05);
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .tab-btn {
+    color: #999;
+}
+
+.dark-theme .section-title {
+    color: #fff;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .song-artist {
+    color: #999;
+}
+
+.dark-theme .most-played-song,
+.dark-theme .song-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#overview {
+    overflow-y: hidden;
+    height: 100%;
+    padding: 10px 0;
+}
+
+#insights {
+    overflow-y: auto;
+    height: 100%;
+    padding: 10px 0;
+}
+
+#users {
+    overflow-y: auto;
+    height: 100%;
+    padding: 10px 0;
+}
+
+#top-songs {
+    overflow-y: hidden;
+    height: 100%;
+    padding: 10px 0;
+}
+
+/* Remove focus outline */
+.tab-btn:focus {
+    outline: none;
+}
+
+/* Smooth hover transition */
+.tab-item:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark theme for analysis content */
+[data-theme="dark"] .analysis-stat {
+    background: var(--background-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .analysis-stat strong {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .analysis-stat div {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .most-played-song {
+    background: var(--background-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .song-item {
+    background: var(--background-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .song-title {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .song-artist {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .play-count {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .leaderboard-item {
+    background: var(--background-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .username {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .contribution-count {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] #genreChart {
+    background: var(--background-elevated);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+[data-theme="dark"] .session-insights {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .insight-item {
+    background: var(--background-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .insight-value {
+    color: var(--accent-color);
+} 

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Sessions</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --primary-color: #1db954;
+            --dark-color: #191414;
+            --light-color: #f8f9fa;
+            --accent-color: #ff4757;
+            --dark-bg: #121212;
+            --dark-elevated: #282828;
+            --gold-gradient: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--light-color);
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--dark-color);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+        }
+
+        .search-container {
+            flex: 0 1 400px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-button:hover {
+            color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(25, 20, 20, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--dark-color);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Sessions Grid */
+        .sessions-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sessions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .session-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .session-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .session-info {
+            padding: 1.5rem;
+        }
+
+        .session-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .session-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Modal Styles */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .main-container, .hero, .header {
+            transition: filter 0.3s ease;
+        }
+
+        body.modal-open .main-container,
+        body.modal-open .hero,
+        body.modal-open .header {
+            filter: blur(8px);
+        }
+
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1001;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            padding: 2rem;
+            border-radius: 15px;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .search-container {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            z-index: 1002;
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .create-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .create-btn:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+        }
+
+        .join-btn {
+            background: var(--dark-color);
+            color: white;
+        }
+
+        .join-btn:hover {
+            background: #282828;
+            transform: translateY(-2px);
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .modal input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .image-upload {
+            margin: 1rem 0;
+        }
+
+        #imagePreview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .modal .btn {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .modal .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .modal .cancel-btn:hover {
+            background: #c82333;
+        }
+
+        .session-join-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .session-card:hover .session-join-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .session-join-btn:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+        }
+
+        .modal-description {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-buttons .btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 15px;
+        }
+
+        .modal-buttons .btn i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .modal-buttons .btn small {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .modal-footer {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* Add fadeOut animation */
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            color: white;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon.active {
+            color: var(--primary-color);
+            background: rgba(29, 185, 84, 0.2);
+        }
+
+        /* Theme Switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: rgba(255, 255, 255, 0.1);
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+        }
+
+        .slider .fa-sun,
+        .slider .fa-moon {
+            color: white;
+            font-size: 14px;
+        }
+
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        [data-theme="dark"] {
+            background: var(--dark-bg);
+        }
+
+        [data-theme="dark"] .header {
+            background: var(--dark-elevated);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .hero {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.05), 
+                rgba(25, 20, 20, 0.2)
+            );
+        }
+
+        [data-theme="dark"] .hero h1 {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="dark"] .hero p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        [data-theme="dark"] .join-session-btn {
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+
+        [data-theme="dark"] .create-session-btn {
+            background: var(--gold-gradient);
+            border: none;
+        }
+
+        [data-theme="dark"] .auth-btn.login-btn {
+            background: var(--gold-gradient);
+            color: black;
+        }
+
+        [data-theme="dark"] .auth-btn.register-btn {
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+
+        [data-theme="dark"] .auth-divider {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme="dark"] .nav-icon {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        [data-theme="dark"] .nav-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .nav-icon.active {
+            color: #FFD700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-music"></i>
+            C-Sion
+        </div>
+        <div class="nav-left">
+            <i class="fas fa-home nav-icon active" title="Home"></i>
+            <i class="fas fa-music nav-icon" title="Sessions"></i>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="header-buttons">
+            <a href="/login.html" class="auth-btn login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <span class="auth-divider">or</span>
+            <a href="/register.html" class="auth-btn register-btn">Register</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Listen Together</h1>
+            <p>Create or join a session to enjoy music with friends in real-time</p>
+            <div class="hero-buttons">
+                <button class="create-session-btn" id="createBtn">Create Session</button>
+                <button class="join-session-btn" id="joinBtn">Join Session</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Session Modal -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <h2>Create New Session</h2>
+            <div class="modal-description">
+                Choose the type of session you want to create
+            </div>
+            <div class="modal-buttons">
+                <button class="btn create-btn" id="createPublicBtn">
+                    <i class="fas fa-globe"></i>
+                    Public Session
+                    <small>Visible to everyone</small>
+                </button>
+                <button class="btn create-btn" id="createPrivateBtn">
+                    <i class="fas fa-lock"></i>
+                    Private Session
+                    <small>Only accessible with code</small>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel-btn" id="createModalClose">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Session Modal -->
+    <div class="modal" id="joinModal">
+        <div class="modal-content">
+            <h2>Join Session</h2>
+            <input type="text" id="sessionCode" placeholder="Enter session code">
+            <button class="btn join-btn" id="joinSessionBtn">Join</button>
+            <button class="btn cancel-btn" id="joinModalClose">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Public Session Creation Modal -->
+    <div class="modal" id="publicSessionModal">
+        <div class="modal-content">
+            <h2>Create Public Session</h2>
+            <input type="text" id="sessionName" placeholder="Session Name">
+            <div class="image-upload">
+                <label for="sessionImage">Session Image (optional)</label>
+                <input type="file" id="sessionImage" accept="image/*">
+                <img id="imagePreview" src="/images/default-session.png">
+            </div>
+            <button class="btn create-btn" id="confirmPublicSession">Create</button>
+            <button class="btn cancel-btn" id="cancelPublicSession">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+
+        // Debug helper
+        function logElement(name, element) {
+            console.log(`${name}: `, element ? 'Found' : 'Not found');
+        }
+
+        // Get all DOM elements
+        const elements = {
+            createBtn: document.getElementById('createBtn'),
+            joinBtn: document.getElementById('joinBtn'),
+            createModal: document.getElementById('createModal'),
+            joinModal: document.getElementById('joinModal'),
+            publicSessionModal: document.getElementById('publicSessionModal'),
+            createPublicBtn: document.getElementById('createPublicBtn'),
+            createPrivateBtn: document.getElementById('createPrivateBtn'),
+            confirmPublicSession: document.getElementById('confirmPublicSession'),
+            cancelPublicSession: document.getElementById('cancelPublicSession'),
+            joinSessionBtn: document.getElementById('joinSessionBtn'),
+            sessionCode: document.getElementById('sessionCode'),
+            sessionSearch: document.getElementById('sessionSearch'),
+            publicSessions: document.getElementById('publicSessions'),
+            sessionImage: document.getElementById('sessionImage'),
+            imagePreview: document.getElementById('imagePreview'),
+            createModalClose: document.getElementById('createModalClose'),
+            joinModalClose: document.getElementById('joinModalClose')
+        };
+
+        // Debug check
+        Object.entries(elements).forEach(([name, element]) => {
+            logElement(name, element);
+        });
+
+        function openModal(modal) {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('open'));
+            modal.classList.add('open');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('open');
+            document.body.classList.remove('modal-open');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('open');
+            });
+            document.body.style.overflow = '';
+        }
+
+        // Load public sessions on page load
+        loadPublicSessions();
+
+        // Search functionality
+        let searchTimeout;
+        elements.sessionSearch?.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = e.target.value.trim();
+                if (query) {
+                    searchSessions(query);
+                } else {
+                    loadPublicSessions();
+                }
+            }, 300);
+        });
+
+        async function loadPublicSessions() {
+            try {
+                const response = await fetch('/api/sessions/public');
+                const sessions = await response.json();
+                displaySessions(sessions);
+            } catch (err) {
+                console.error('Error loading sessions:', err);
+            }
+        }
+
+        async function searchSessions(query) {
+            try {
+                const response = await fetch(`/api/sessions/search?query=${encodeURIComponent(query)}`);
+                const sessions = await response.json();
+                displaySessions(sessions);
+            } catch (err) {
+                console.error('Error searching sessions:', err);
+            }
+        }
+
+        function displaySessions(sessions) {
+            if (!Array.isArray(sessions)) {
+                console.log('Invalid sessions data:', sessions);
+                elements.publicSessions.innerHTML = '<p>No active sessions</p>';
+                return;
+            }
+
+            console.log('Sessions data:', sessions); // Debug log
+
+            elements.publicSessions.innerHTML = sessions.map(session => `
+                <div class="session-card" data-session-id="${session.sessionId}">
+                    <button class="session-join-btn">
+                        <i class="fas fa-sign-in-alt"></i> Join
+                    </button>
+                    <img class="session-image" src="${session.sessionImage || '/images/default-session.png'}" alt="Session Image">
+                    <div class="session-info">
+                        <h3>${session.sessionName}</h3>
+                        <div class="session-stats">
+                            <span>
+                                <i class="fas fa-users"></i> ${session.connectedUsers} listening
+                            </span>
+                            <span>
+                                <i class="fas fa-clock"></i> ${getSessionDuration(session.createdAt)}
+                            </span>
+                        </div>
+                        <div class="host-info">
+                            Hosted by ${session.hostUsername || 'Anonymous'}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.session-card').forEach(card => {
+                const joinBtn = card.querySelector('.session-join-btn');
+                joinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const sessionId = card.dataset.sessionId;
+                    console.log('Joining session:', sessionId); // Debug log
+                    window.location.href = `/index.html?session=${sessionId}`;
+                });
+
+                // Make the card clickable for details (optional)
+                card.addEventListener('click', () => {
+                    const sessionId = card.dataset.sessionId;
+                    console.log('Clicking session:', sessionId); // Debug log
+                    window.location.href = `/index.html?session=${sessionId}`;
+                });
+            });
+        }
+
+        function getSessionDuration(createdAt) {
+            const duration = Date.now() - new Date(createdAt).getTime();
+            const hours = Math.floor(duration / (1000 * 60 * 60));
+            const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+            return `${minutes}m`;
+        }
+
+        // Show/Hide modals
+        elements.createBtn?.addEventListener('click', () => {
+            openModal(elements.createModal);
+            console.log('Create modal opened');
+        });
+
+        elements.joinBtn?.addEventListener('click', () => {
+            openModal(elements.joinModal);
+            elements.sessionCode?.focus();
+            console.log('Join modal opened');
+        });
+
+        // Close buttons
+        elements.createModalClose?.addEventListener('click', () => {
+            closeModal(elements.createModal);
+        });
+
+        elements.joinModalClose?.addEventListener('click', () => {
+            closeModal(elements.joinModal);
+        });
+
+        // Create session handlers
+        elements.createPublicBtn?.addEventListener('click', () => {
+            closeModal(elements.createModal);
+            openModal(elements.publicSessionModal);
+            console.log('Public session modal opened');
+        });
+
+        // Handle public session creation confirmation
+        elements.confirmPublicSession?.addEventListener('click', async () => {
+            const sessionName = document.getElementById('sessionName').value.trim();
+            if (!sessionName) {
+                showToast('Please enter a session name');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('sessionType', 'public');
+            formData.append('sessionName', sessionName);
+            if (elements.sessionImage.files[0]) {
+                formData.append('sessionImage', elements.sessionImage.files[0]);
+            }
+
+            try {
+         const response = await fetch('/api/session/create', {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/json'
+             },
+             body: JSON.stringify({
+                 sessionType: 'private'
+             })
+         });
+         if (!response.ok) {
+             throw new Error(`HTTP error! status: ${response.status}`);
+         }
+         const data = await response.json();
+         window.location.href = `/session.html?session=${data.sessionId}`;
+     } catch (err) {
+         console.error('Error creating private session:', err);
+         showToast('Error creating session: ' + err.message);
+     }
+        });
+
+        elements.createPrivateBtn?.addEventListener('click', async () => {
+            try {
+                closeModal(elements.createModal);
+                const response = await fetch('/api/session/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionType: 'private'
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to create session');
+                }
+                const data = await response.json();
+                window.location.href = `/session.html?session=${data.sessionId}`;
+            } catch (err) {
+                console.error('Error creating private session:', err);
+                showToast('Error creating session');
+            }
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('open');
+                document.body.style.overflow = '';
+                // Reset form values
+                if (elements.sessionCode) elements.sessionCode.value = '';
+                if (document.getElementById('sessionName')) {
+                    document.getElementById('sessionName').value = '';
+                }
+                if (elements.imagePreview) {
+                    elements.imagePreview.src = '/images/default-session.png';
+                }
+                if (elements.sessionImage) {
+                    elements.sessionImage.value = '';
+                }
+            }
+        });
+
+        // Add escape key to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    modal.classList.remove('open');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Join session handler
+        elements.joinSessionBtn.addEventListener('click', async () => {
+            const code = elements.sessionCode.value.trim();
+            if (!code) {
+                showToast('Please enter a session code');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/session/join/${code}`);
+                if (response.ok) {
+                    window.location.href = `/session.html?session=${code}`;
+                } else {
+                    showToast('Invalid session code');
+                }
+            } catch (err) {
+                showToast('Error joining session');
+            }
+        });
+
+        // Toast notification system
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Socket.IO error handling
+        socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+        });
+
+        // Real-time session updates
+        socket.on('session-updated', () => {
+            loadPublicSessions();
+        });
+
+        // Handle session ended
+        socket.on('session-ended', (sessionId) => {
+            const sessionCard = document.querySelector(`.session-card[data-session-id="${sessionId}"]`);
+            if (sessionCard) {
+                sessionCard.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    sessionCard.remove();
+                }, 300);
+            }
+        });
+
+        // Handle public session creation cancellation
+        elements.cancelPublicSession.addEventListener('click', () => {
+            elements.publicSessionModal.classList.remove('open');
+            document.getElementById('sessionName').value = '';
+            elements.imagePreview.src = '/images/default-session.png';
+            elements.sessionImage.value = '';
+        });
+
+        // Handle image preview
+        elements.sessionImage.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    elements.imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add Enter key support for session code input
+        elements.sessionCode.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                elements.joinSessionBtn.click();
+            }
+        });
+
+        // Debug click handlers
+        elements.createBtn.onclick = function() {
+            console.log('Create button clicked');
+            openModal(elements.createModal);
+        };
+
+        elements.joinBtn.onclick = function() {
+            console.log('Join button clicked');
+            openModal(elements.joinModal);
+        };
+
+        // Theme switching
+        const checkbox = document.getElementById('checkbox');
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            checkbox.checked = true;
+        }
+
+        // Theme switch handler
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html> 
